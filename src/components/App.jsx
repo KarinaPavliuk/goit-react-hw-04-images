@@ -22,7 +22,7 @@ export const App = () => {
   const [modalUrl, setModalUrl] = useState('');
 
   useEffect(() => {
-    fetchImages();
+    searchQuery && fetchImages();
   }, [searchQuery, page]);
 
   const fetchImages = async () => {
