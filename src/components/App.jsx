@@ -22,10 +22,8 @@ export const App = () => {
 
   useEffect(() => {
     searchQuery && fetchImages();
-    // eslint-disable-next-line no-use-before-define
-  }, [searchQuery, page, fetchImages]);
+  }, [searchQuery, page]);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchImages = async () => {
     try {
       setIsLoading(true);
