@@ -25,12 +25,10 @@ export const Modal = ({ modalUrl, closeModal }) => {
   };
 
   return (
-    <>
-      <div className={css.overlay} onClick={handleOverlayClick}>
-        <div className={css.modal}>
-          <img src={modalUrl} alt="" />
-        </div>
+    <div className={css.overlay} onClick={handleOverlayClick}>
+      <div className={css.modal}>
+        <img src={modalUrl} alt="" />
       </div>
-    </>
+    </div>
   );
 };
