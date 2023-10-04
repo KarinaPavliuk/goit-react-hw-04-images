@@ -21,20 +21,21 @@ export const App = () => {
   const [modalUrl, setModalUrl] = useState('');
 
   useEffect(() => {
+    if (!searchQuery) return;
+    const fetchImages = async () => {
+      try {
+        setIsLoading(true);
+        const data = await getAllImages(searchQuery, page);
+        setImages(prevImages => [...prevImages, ...data.hits]);
+      } catch ({ message }) {
+        setError(message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     searchQuery && fetchImages();
   }, [searchQuery, page]);
-
-  const fetchImages = async () => {
-    try {
-      setIsLoading(true);
-      const data = await getAllImages(searchQuery, page);
-      setImages([...images, ...data.hits]);
-    } catch ({ message }) {
-      setError(message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleSetSearchQuery = value => {
     setImages([]);
