@@ -44,7 +44,7 @@ export const App = () => {
   };
 
   const handleLoadBtnClick = () => {
-    setPage(page + 1);
+    setPage(prevPage => prevPage + 1);
   };
 
   const handleImgClick = largeImageURL => {
