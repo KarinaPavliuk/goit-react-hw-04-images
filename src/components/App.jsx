@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { RotatingLines } from 'react-loader-spinner';
+import toast, { Toaster } from 'react-hot-toast';
 
 import { Searchbar } from './Searchbar/Searchbar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
@@ -19,6 +20,7 @@ export const App = () => {
   const [page, setPage] = useState(1);
   const [show, setShow] = useState(false);
   const [modalUrl, setModalUrl] = useState('');
+  const [totalImages, setTotalImages] = useState(0);
 
   useEffect(() => {
     if (!searchQuery) return;
@@ -26,7 +28,23 @@ export const App = () => {
       try {
         setIsLoading(true);
         const data = await getAllImages(searchQuery, page);
-        setImages(prevImages => [...prevImages, ...data.hits]);
+
+        if (!data.totalHits) {
+          toast.error('There is no that value, please change query.');
+          return;
+        }
+
+        const normalizedImages = data.hits.map(
+          ({ id, webformatURL, largeImageURL, tags }) => ({
+            id,
+            webformatURL,
+            largeImageURL,
+            tags,
+          })
+        );
+
+        setImages(prevImages => [...prevImages, ...normalizedImages]);
+        setTotalImages(data.totalHits);
       } catch ({ message }) {
         setError(message);
       } finally {
@@ -38,9 +56,14 @@ export const App = () => {
   }, [searchQuery, page]);
 
   const handleSetSearchQuery = value => {
+    if (value === searchQuery) {
+      toast.error('Please change query.');
+      return;
+    }
     setImages([]);
     setSearchQuery(value);
     setPage(1);
+    setTotalImages(0);
   };
 
   const handleLoadBtnClick = () => {
@@ -54,11 +77,13 @@ export const App = () => {
 
   const closeModal = () => {
     setShow(false);
+    setModalUrl('');
   };
 
   return (
     <div className={css.app}>
       <Searchbar submit={handleSetSearchQuery} />
+      <Toaster />
       {images.length > 0 && (
         <ImageGallery>
           <ImageGalleryItem images={images} handleClick={handleImgClick} />
@@ -76,7 +101,9 @@ export const App = () => {
           />
         </Loader>
       )}
-      {images.length > 0 && <Button handleClick={handleLoadBtnClick}></Button>}
+      {images.length !== totalImages && !isLoading && (
+        <Button handleClick={handleLoadBtnClick}></Button>
+      )}
       {show && <Modal modalUrl={modalUrl} closeModal={closeModal} />}
     </div>
   );
